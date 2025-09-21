@@ -23,6 +23,14 @@ namespace BP_gokart
             this.telefon = telefon;
             this.domain = domain;
         }
+
+        public Helyszin(string nev, string cim, string telefon, string domain):this(nev, cim, telefon, domain)
+        {}
+
+        public override string ToString()
+        {
+            return $"{nev}|{cim}|{telefon}|{domain}";
+        }
     }
     #endregion
     internal class Program
@@ -42,12 +50,15 @@ namespace BP_gokart
             Console.WriteLine();
         }
         #endregion
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
-            Helyszin helyszin = new Helyszin("BP - Gokart", "6969 Bivalybasznád, GYárkémény út 18.", "+36 1 209 09 09", "www.bpgokart.hu");
+            Helyszin ceg = new Helyszin("BP - Gokart", "6969 Bivalybasznád, Gyárkémény út 18.", "+36 1 209 09 09", "www.bpgokart.hu");
+
+            Console.WriteLine($"{ceg}");
+            Console.WriteLine("Üdvözöljük a Bp - Gokart foglalási naplójában!");
 
             Console.WriteLine();
-            Console.WriteLine("Kilépéshez nyonja meg az ENTER billentyűt.");
+            Console.WriteLine("Kilépéshez nyomja meg az ENTER billentyűt.");
             Console.ReadLine();
         }
     }

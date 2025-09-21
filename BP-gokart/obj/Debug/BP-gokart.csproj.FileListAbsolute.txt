@@ -1,0 +1,7 @@
+C:\Users\user\Documents\Github\BP-gokart\BP-gokart\bin\Debug\BP-gokart.exe.config
+C:\Users\user\Documents\Github\BP-gokart\BP-gokart\bin\Debug\BP-gokart.exe
+C:\Users\user\Documents\Github\BP-gokart\BP-gokart\bin\Debug\BP-gokart.pdb
+C:\Users\user\Documents\Github\BP-gokart\BP-gokart\obj\Debug\BP-gokart.csproj.AssemblyReference.cache
+C:\Users\user\Documents\Github\BP-gokart\BP-gokart\obj\Debug\BP-gokart.csproj.CoreCompileInputs.cache
+C:\Users\user\Documents\Github\BP-gokart\BP-gokart\obj\Debug\BP-gokart.exe
+C:\Users\user\Documents\Github\BP-gokart\BP-gokart\obj\Debug\BP-gokart.pdb
