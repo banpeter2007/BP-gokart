@@ -3,8 +3,8 @@
   "WorkspaceRootPath": "C:\\Users\\BanPeter\\Documents\\Github_12D\\BP-gokart\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{CE4F1318-1CD8-409F-B987-B5DEEEC13832}|BP-gokart\\BP-gokart.csproj|c:\\users\\banpeter\\documents\\github_12d\\bp-gokart\\bp-gokart\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CE4F1318-1CD8-409F-B987-B5DEEEC13832}|BP-gokart\\BP-gokart.csproj|solutionrelative:bp-gokart\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\BanPeter\\Documents\\Github_12D\\BP-gokart\\BP-gokart\\Program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:BP-gokart\\Program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -24,7 +24,7 @@
               "RelativeDocumentMoniker": "BP-gokart\\Program.cs",
               "ToolTip": "C:\\Users\\BanPeter\\Documents\\Github_12D\\BP-gokart\\BP-gokart\\Program.cs",
               "RelativeToolTip": "BP-gokart\\Program.cs",
-              "ViewState": "AgIAAAsAAAAAAAAAAAAQwDAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAIgAAAAAAAAAAAAAAKgAAAA/AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-09-15T12:40:46.721Z",
               "EditorCaption": ""
