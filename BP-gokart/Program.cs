@@ -36,105 +36,53 @@ namespace BP_gokart
 
     public class Versenyzok
     {
-        private string veznev;
-        private string kernev;
-        private DateTime szuldatum;
-        private bool felnott;
-        private string azon;
-        private string email;
+        private static List<string> veznevek;   // Statikus listák – fájlokból csak egyszer olvassuk be
+        private static List<string> kernevek;
 
-        public Versenyzok(string veznev, string kernev, DateTime szuldatum, bool felnott, string azon, string email)
+        public string veznev;
+        public string kernev;
+        public DateTime szuldatum;
+        public bool felnott;
+        public string azon;
+        public string email;
+
+        private static Random rnd = new Random();
+
+        public static void nev_beolvasas()
         {
-            this.veznev = veznev;
-            this.kernev = kernev;
-            this.szuldatum = szuldatum;
-            this.felnott = felnott;
-            this.azon = azon;
-            this.email = email;
+            veznevek = File.ReadAllText("vezeteknevek.txt").Replace("'", "").Split(',').Select(v => v.Trim()).ToList();     // Select kell, hogy a szóközöket is eltávolítsa
+
+            kernevek = File.ReadAllText("keresztnevek.txt").Replace("'", "").Split(',').Select(k => k.Trim()).ToList();     // Select kell, hogy a szóközöket is eltávolítsa
         }
 
-        public string[] veznev_beolvasas()
+        // Versenyző példány konstruktora
+        public Versenyzok(int id)
         {
-            StreamReader be_veznev = new StreamReader("vezeteknevek.txt");
-            string sor = be_veznev.ReadLine();
-            string[] reszek;
-            string[] veznevek = new string[] { };
-            while(sor != null)
-            {
-                if (sor != null)
-                {
-                    reszek = sor.Replace("'", "").Split(';');
-                    veznevek = veznevek.Append(reszek[0]).ToArray();
-                }
-                sor = be_veznev.ReadLine();
-            }
+            veznev = veznevek[rnd.Next(veznevek.Count)];
+            kernev = kernevek[rnd.Next(kernevek.Count)];
 
-            return veznevek;
-        }
-
-        public string[] kernev_beolvasas()
-        {
-            StreamReader be_kernev = new StreamReader("keresztnevek.txt");
-            string sor = be_kernev.ReadLine();
-            string[] reszek;
-            string[] kernevek = new string[] { };
-            while (sor != null)
-            {
-                if (sor != null)
-                {
-                    reszek = sor.Replace("'", "").Split(';');
-                    kernevek = kernevek.Append(reszek[0]).ToArray();
-                }
-                sor = be_kernev.ReadLine();
-            }
-            return kernevek;
-        }
-
-        public Dictionary<int, Versenyzok> versenyzok = new Dictionary<int, Versenyzok>();
-        public Random rnd = new Random();
-        public int versenyzokSzama()
-        {
-            int random_generalt_versenyzok_szama = rnd.Next(1, 151);
-            return random_generalt_versenyzok_szama;
-        }
-
-        public void versenyzoHozzaadas(Versenyzok versenyzo)
-        {
-            int id = versenyzok.Count + 1;
-            versenyzo.veznev = veznev_beolvasas()[rnd.Next(0, veznev_beolvasas().Length)];
-            versenyzo.kernev = kernev_beolvasas()[rnd.Next(0, kernev_beolvasas().Length)];
             int year = rnd.Next(1953, 2014);
             int month = rnd.Next(1, 13);
             int day = rnd.Next(1, DateTime.DaysInMonth(year, month) + 1);
-            versenyzo.szuldatum = new DateTime(year, month, day);
-            if (DateTime.Now.Year - versenyzo.szuldatum.Year >= 18) versenyzo.felnott = true;
-            else versenyzo.felnott = false;
-            string teljesnev_egyben = versenyzo.veznev + versenyzo.kernev;
-            string szuldatum_str = versenyzo.szuldatum.ToString("yyyyMMdd");
-            versenyzo.azon = $"GO-{teljesnev_egyben}-{szuldatum_str}";
-            versenyzo.email = $"{versenyzo.veznev.ToLower()}.{versenyzo.kernev.ToLower()}@gmail.com";
+            szuldatum = new DateTime(year, month, day);
 
-            if (id <= versenyzokSzama())
-            {
-                versenyzok.Add(id, versenyzo);
-            }
-            else
-            {
-                Console.WriteLine("A versenyzők generálása megtörtént!");
-                Console.WriteLine($"{versenyzok.Count()} versenyző legenerálása valósult meg.");
-            }
+            int age = DateTime.Now.Year - szuldatum.Year;
+            felnott = szuldatum.AddYears(18) <= DateTime.Now;
+
+            string teljesnev = $"{veznev}{kernev}";
+            string szuldatum_str = szuldatum.ToString("yyyyMMdd");
+            azon = $"GO-{teljesnev}-{szuldatum_str}";
+
+            email = $"{veznev.ToLower()}.{kernev.ToLower()}@gmail.com";
         }
 
-        public void versenyzokKiirasa()
+        public void Kiir()
         {
-            foreach (var item in versenyzok)
-            {
-                Console.WriteLine($"{item.Key}. {item.Value.veznev} {item.Value.kernev} | Születési dátum: {item.Value.szuldatum.ToString("yyyy.MM.dd.")} | Felnőtt: {(item.Value.felnott ? "Igen" : "Nem")} | Azon: {item.Value.azon} | Email: {item.Value.email}");
-            }
+            Console.WriteLine($"{veznev} {kernev}|Születési dátum:{szuldatum:yyyy.MM.dd.}|Felnőtt:{(felnott ? "Igen" : "Nem")}|Azonosító:{azon}|Email:{email}");
         }
     }
-    #endregion
-    internal class Program
+        #endregion
+        internal class Program
     {
         #region fejlec
         static void fejlec()
@@ -158,16 +106,27 @@ namespace BP_gokart
             ceg.kiiratas();
             Console.WriteLine();
             Console.WriteLine("Üdvözöljük a Bp - Gokart foglalási naplójában!");
+            Console.WriteLine();
 
-            Versenyzok versenyzok = new Versenyzok("", "", DateTime.Now, false, "", "");
-            for (int i = 0; i < versenyzok.versenyzokSzama(); i++)
+            Versenyzok.nev_beolvasas();
+
+            List<Versenyzok> versenyzok = new List<Versenyzok>();
+            Random rnd = new Random();
+            int darab = rnd.Next(1, 151);
+
+            for (int i = 1; i <= darab; i++)
             {
-                Versenyzok uj_versenyzo = new Versenyzok("", "", DateTime.Now, false, "", "");
-                versenyzok.versenyzoHozzaadas(uj_versenyzo);
+                versenyzok.Add(new Versenyzok(i));
             }
 
-            Console.WriteLine("A versenyzők, akik foglaltak:");
-            versenyzok.versenyzokKiirasa();
+            /*
+            foreach (var v in versenyzok)
+            {
+                v.Kiir();
+            }
+            */
+
+            Console.WriteLine($"Eddig {darab} versenyző regisztrált be az összes adatával a foglalási naplóba.");
 
             Console.WriteLine();
             Console.WriteLine("Kilépéshez nyomja meg az ENTER billentyűt.");
