@@ -38,6 +38,7 @@ namespace BP_gokart
     #endregion
 
     #region 2. feladat: Versenyzők generálása
+    // 2. feladat: Versenyzők generálása
     public class Versenyzok
     {
         private static List<string> veznevek;   // Statikus listák – fájlokból csak egyszer olvassuk be
@@ -87,6 +88,7 @@ namespace BP_gokart
     #endregion
 
     #region 3. feladat: Pályabérlés szabályai, foglalások időpontjai
+    // 3. feladat: Pályabérlés szabályai, foglalások időpontjai
     public class Foglalasok
     {
         public Versenyzok versenyzo;
@@ -102,7 +104,7 @@ namespace BP_gokart
             idotartam = rnd.Next(1, 2 + 1);
             
             DateTime kezdo_nap = DateTime.Today;
-            DateTime zaro_nap = new DateTime(2027, 12, 31);
+            DateTime zaro_nap = new DateTime(2025, 12, 31);
             int napok_szama = (zaro_nap - kezdo_nap).Days;
             DateTime randomnap = kezdo_nap.AddDays(rnd.Next(napok_szama + 1));
 
@@ -119,6 +121,80 @@ namespace BP_gokart
     }
     #endregion
 
+    #region 4. feladat: Hónap végéig fennmaradó napok foglalási szalagja
+    // 4. feladat: Hónap végéig fennmaradó napok foglalási szalagja
+    public class Idoszalag
+    {
+        private int ora_kezdet = 8;
+        private int ora_vege = 19 - 1;  //mert 19 ig lehet foglalni, tehát 18-19-ig tart a legutolsó foglalás
+
+        // Minden időpont szabad (false: szabad, true: foglalt)
+        private bool[,] idopontok;
+
+        private DateTime kezdodatum;
+        private int napok_szama;
+
+        public Idoszalag(DateTime kezdodatum)
+        {
+            this.kezdodatum = kezdodatum;
+            int honap_napjai = DateTime.DaysInMonth(kezdodatum.Year, kezdodatum.Month);
+            napok_szama = honap_napjai - kezdodatum.Day + 1;
+            idopontok = new bool[napok_szama, ora_vege - ora_kezdet + 1];
+        }
+
+        public void FeltoltFoglalasokkal(List<Foglalasok> foglalasok)
+        {
+            foreach (var f in foglalasok)
+            {
+                // Csak az aktuális hónapban lévő foglalásokat vesszük figyelembe
+                if (f.kezdes.Month == kezdodatum.Month && f.kezdes.Year == kezdodatum.Year && f.kezdes.Day >= kezdodatum.Day)
+                {
+                    int nap_index = f.kezdes.Day - kezdodatum.Day;
+                    int ora_index_kezd = f.kezdes.Hour - ora_kezdet;
+                    for (int i = 0; i < f.idotartam; i++)
+                    {
+                        int ora_index = ora_index_kezd + i;
+                        if (nap_index >= 0 && nap_index < napok_szama && ora_index >= 0 && ora_index <= ora_vege - ora_kezdet)
+                        {
+                            idopontok[nap_index, ora_index] = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        public void Megjelenit()
+        {
+            Console.Write("             ");
+            for (int ora = ora_kezdet; ora <= ora_vege; ora++)
+                Console.Write($"{ora}-{ora + 1} ");
+            Console.WriteLine();
+
+            for (int nap = 0; nap < napok_szama; nap++)
+            {
+                DateTime aktnap = kezdodatum.AddDays(nap);
+                Console.Write($"{aktnap:yyyy.MM.dd} ");
+
+                for (int ora = 0; ora <= ora_vege - ora_kezdet; ora++)
+                {
+                    if (idopontok[nap, ora])
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.Write("   $  ");
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.Write("   #  ");
+                    }
+                    Console.ResetColor();
+                }
+                Console.WriteLine();
+            }
+        }
+    }
+    #endregion
+
     internal class Program
     {
         #region fejlec
@@ -126,7 +202,7 @@ namespace BP_gokart
         {
             /*
              BP - Gokart
-             BP - 09.15.-09.28.
+             BP - 09.15.-10.05.
             */
 
             Type type = typeof(Program);
@@ -156,13 +232,12 @@ namespace BP_gokart
                 versenyzok.Add(new Versenyzok(i));
             }
 
-            /*
             foreach (var v in versenyzok)
             {
                 v.Kiir();
             }
-            */
-
+            
+            Console.WriteLine();
             Console.WriteLine($"Eddig {darab} versenyző regisztrált be az összes adatával a foglalási naplóba.");
 
             List<Foglalasok> foglalasok = new List<Foglalasok>();
@@ -173,11 +248,17 @@ namespace BP_gokart
             }
 
             Console.WriteLine();
-            Console.WriteLine("Foglalások:");
+            Console.WriteLine("Foglalásaik:");
             foreach (var f in foglalasok)
             {
                 f.Kiir();
             }
+
+            Console.WriteLine();
+            Console.WriteLine("Időszalag a hónap végéig:");
+            var idoszalag = new BP_gokart.Idoszalag(DateTime.Today);
+            idoszalag.FeltoltFoglalasokkal(foglalasok);
+            idoszalag.Megjelenit();
 
             Console.WriteLine();
             Console.WriteLine("Kilépéshez nyomja meg az ENTER billentyűt.");
