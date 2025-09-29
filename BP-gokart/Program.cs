@@ -195,6 +195,45 @@ namespace BP_gokart
     }
     #endregion
 
+    #region 5. feladat: Manuális időpontfoglalás
+    // 5. feladat: Manuális időpontfoglalás
+    /*class Manualis_idopontfoglalas
+    {
+        static void Generalt_versenyzok_kilistazasa(List<Versenyzok> versenyzo)
+        {
+            Console.WriteLine("Generált versenyzők adatai kilistázva:");
+            versenyzok.Kiir();
+        }
+
+        public Versenyzok versenyzo;
+        public Foglalasok foglalas;
+
+        public Manualis_idopontfoglalas(Versenyzok v, Foglalasok f)
+        {
+            versenyzo = v;
+            foglalas = f;
+        }
+
+        public static Versenyzok kivalaszt_versenyzot(List<Versenyzok> versenyzok, string azon)
+        {
+            return versenyzok.FirstOrDefault(v => v.azon == azon);
+        }
+
+        public static Foglalasok kivalasztfoglalast(List<Foglalasok> foglalasok, string azon)
+        {
+            return foglalasok.FirstOrDefault(f => f.versenyzo.azon == azon);
+        }
+
+        public static void idopontatallit(Foglalasok foglalas, DateTime ujkezdes, int ujidotartam)
+        {
+            foglalas.kezdes = ujkezdes;
+            foglalas.idotartam = ujidotartam;
+        }
+    
+    }
+    */
+    #endregion
+
     internal class Program
     {
         #region fejlec
@@ -214,11 +253,13 @@ namespace BP_gokart
         #endregion
         public static void Main(string[] args)
         {
+            fejlec();
+
             Helyszin ceg = new Helyszin("BP - Gokart", "6969 Bivalybasznád, Gyárkémény út 18.", "+36 1 209 09 09", "www.bpgokart.hu");
 
             ceg.kiiratas();
             Console.WriteLine();
-            Console.WriteLine("Üdvözöljük a Bp - Gokart foglalási naplójában!");
+            Console.WriteLine("Üdvözöljük a BP - Gokart foglalási naplójában!");
             Console.WriteLine();
 
             Versenyzok.nev_beolvasas();
@@ -259,6 +300,13 @@ namespace BP_gokart
             var idoszalag = new BP_gokart.Idoszalag(DateTime.Today);
             idoszalag.FeltoltFoglalasokkal(foglalasok);
             idoszalag.Megjelenit();
+
+            /*
+            List<Manualis_idopontfoglalas> manualis_idopontfoglalas = new List<Manualis_idopontfoglalas>();
+            Manualis_idopontfoglalas.Generalt_versenyzok_kilistazasa(versenyzok);
+            */
+
+            //A kommentelt részek egyelőre hibásak, be kell még fejezni
 
             Console.WriteLine();
             Console.WriteLine("Kilépéshez nyomja meg az ENTER billentyűt.");
