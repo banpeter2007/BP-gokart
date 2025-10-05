@@ -34,7 +34,6 @@ namespace BP_gokart
             Console.WriteLine("-------------------------------------------");
         }
     }
-
     #endregion
 
     #region 2. feladat: Versenyzők generálása
@@ -60,6 +59,24 @@ namespace BP_gokart
             kernevek = File.ReadAllText("keresztnevek.txt").Replace("'", "").Split(',').Select(k => k.Trim()).ToList();     // Select kell, hogy a szóközöket is eltávolítsa
         }
 
+        private static string ekezet_eltavolitas(string szoveg)
+        {
+            string ekezetes = "áéíóöőúüűÁÉÍÓÖŐÚÜŰ";
+            string normal = "aeiooouuuAEIOOOUUU";
+            string eredmeny = "";
+
+            foreach (char c in szoveg)
+            {
+                int index = ekezetes.IndexOf(c);
+                if (index >= 0)
+                    eredmeny += normal[index];
+                else
+                    eredmeny += c;
+            }
+
+            return eredmeny;
+        }
+
         // Versenyző példány konstruktora
         public Versenyzok(int id)
         {
@@ -74,10 +91,11 @@ namespace BP_gokart
             felnott = szuldatum.AddYears(18) <= DateTime.Now;
 
             string teljesnev = $"{veznev}{kernev}";
+            string teljesnev_ekezet_nelkul = ekezet_eltavolitas(teljesnev);
             string szuldatum_str = szuldatum.ToString("yyyyMMdd");
-            azon = $"GO-{teljesnev}-{szuldatum_str}";
+            azon = $"GO-{teljesnev_ekezet_nelkul}-{szuldatum_str}";
 
-            email = $"{veznev.ToLower()}.{kernev.ToLower()}@gmail.com";
+            email = $"{ekezet_eltavolitas(veznev).ToLower()}.{ekezet_eltavolitas(kernev).ToLower()}@gmail.com";
         }
 
         public void Kiir()
@@ -195,45 +213,6 @@ namespace BP_gokart
     }
     #endregion
 
-    #region 5. feladat: Manuális időpontfoglalás
-    // 5. feladat: Manuális időpontfoglalás
-    /*class Manualis_idopontfoglalas
-    {
-        static void Generalt_versenyzok_kilistazasa(List<Versenyzok> versenyzo)
-        {
-            Console.WriteLine("Generált versenyzők adatai kilistázva:");
-            versenyzok.Kiir();
-        }
-
-        public Versenyzok versenyzo;
-        public Foglalasok foglalas;
-
-        public Manualis_idopontfoglalas(Versenyzok v, Foglalasok f)
-        {
-            versenyzo = v;
-            foglalas = f;
-        }
-
-        public static Versenyzok kivalaszt_versenyzot(List<Versenyzok> versenyzok, string azon)
-        {
-            return versenyzok.FirstOrDefault(v => v.azon == azon);
-        }
-
-        public static Foglalasok kivalasztfoglalast(List<Foglalasok> foglalasok, string azon)
-        {
-            return foglalasok.FirstOrDefault(f => f.versenyzo.azon == azon);
-        }
-
-        public static void idopontatallit(Foglalasok foglalas, DateTime ujkezdes, int ujidotartam)
-        {
-            foglalas.kezdes = ujkezdes;
-            foglalas.idotartam = ujidotartam;
-        }
-    
-    }
-    */
-    #endregion
-
     internal class Program
     {
         #region fejlec
@@ -251,6 +230,104 @@ namespace BP_gokart
             Console.WriteLine();
         }
         #endregion
+
+        #region 5. feladat: Manuális időpontfoglalás átállító
+        // 5. feladat: Manuális időpontfoglalás átállító
+        static Versenyzok versenyzo_kereso(List<Versenyzok> versenyzok, string azon)
+        {
+            return versenyzok.FirstOrDefault(v => v.azon == azon);
+        }
+
+        static void foglalas_atallito(List<Foglalasok> foglalasok, Versenyzok versenyzo)
+        {
+            var foglalas = foglalasok.FirstOrDefault(f => f.versenyzo == versenyzo);
+            if (foglalas == null)
+            {
+                Console.WriteLine("Ehhez a versenyzőhöz nincs foglalás!");
+                return;
+            }
+
+            Console.Write("Adja meg az új dátumot: ");
+            string datum = Console.ReadLine();
+            Console.Write("Adja meg az új kezdési órát: ");
+            int ora = int.Parse(Console.ReadLine());
+            Console.Write("Adja meg az időtartamot: ");
+            int idotartam = int.Parse(Console.ReadLine());
+            int honap = int.Parse(datum.Split('.')[0]);
+            int nap = int.Parse(datum.Split('.')[1]);
+
+            DateTime uj_kezdes = new DateTime(DateTime.Today.Year, honap, nap, ora, 0, 0);
+
+            foglalas.kezdes = uj_kezdes;
+            foglalas.idotartam = idotartam;
+
+            Console.WriteLine("Foglalás sikeresen módosítva!");
+        }
+        #endregion
+
+        #region Menü
+        // + Menü
+        static void menu(List<Versenyzok> versenyzok, List<Foglalasok> foglalasok, Helyszin ceg)
+        {
+            bool fut = true;
+
+            while (fut)
+            {
+                Console.WriteLine();
+                Console.WriteLine("=========== Menü ===========");
+                Console.WriteLine("1 - Helyszín/Céginfók");
+                Console.WriteLine("2 - Versenyzők listája");
+                Console.WriteLine("3 - Foglalások listája");
+                Console.WriteLine("4 - Időszalag megjelenítése");
+                Console.WriteLine("5 - Foglalás átállítása");
+                Console.WriteLine("0 - Kilépés");
+                Console.Write("Választás: ");
+
+                int valasztas = int.Parse(Console.ReadLine());
+                Console.WriteLine();
+
+                switch (valasztas)
+                {
+                    case 1:
+                        ceg.kiiratas();
+                        break;
+                    case 2:
+                        foreach (var v in versenyzok)
+                            v.Kiir();
+                        Console.WriteLine($"Összesen {versenyzok.Count} versenyző.");
+                        break;
+                    case 3:
+                        foreach (var f in foglalasok)
+                            f.Kiir();
+                        break;
+                    case 4:
+                        Console.WriteLine("Ebben a hónapban hátralevő foglalások időszalagja:");
+                        var idoszalag = new Idoszalag(DateTime.Today);
+                        idoszalag.FeltoltFoglalasokkal(foglalasok);
+                        idoszalag.Megjelenit();
+                        break;
+                    case 5:
+                        Console.Write("Adja meg a módosítandó versenyző azonosítóját: ");
+                        string azon = Console.ReadLine();
+                        Versenyzok keresett = versenyzo_kereso(versenyzok, azon);
+                        if (keresett != null)
+                            foglalas_atallito(foglalasok, keresett);
+                        else
+                            Console.WriteLine("Nincs ilyen azonosítóval versenyző!");
+                        break;
+                    case 0:
+                        Console.WriteLine("Köszönjük, hogy igénybe vette szolgáltatásainkat!");
+                        fut = false;
+                        break;
+                    default:
+                        Console.WriteLine("Érvénytelen választás!");
+                        Console.WriteLine("Válasszon a felsorolt menüpontok sorszámai közül!");
+                        break;
+                }
+            }
+        }
+        #endregion
+
         public static void Main(string[] args)
         {
             fejlec();
@@ -260,6 +337,8 @@ namespace BP_gokart
             ceg.kiiratas();
             Console.WriteLine();
             Console.WriteLine("Üdvözöljük a BP - Gokart foglalási naplójában!");
+            Console.WriteLine();
+            Console.WriteLine($"A program a {DateTime.Today.Year} év hátralevő versenyzőit és foglalásiat tartalmazza!");
             Console.WriteLine();
 
             Versenyzok.nev_beolvasas();
@@ -273,13 +352,14 @@ namespace BP_gokart
                 versenyzok.Add(new Versenyzok(i));
             }
 
+            /*
             foreach (var v in versenyzok)
             {
                 v.Kiir();
             }
-            
-            Console.WriteLine();
-            Console.WriteLine($"Eddig {darab} versenyző regisztrált be az összes adatával a foglalási naplóba.");
+            */
+
+            Console.WriteLine($"{darab} versenyző regisztrált be az összes adatával a foglalási naplóba.");
 
             List<Foglalasok> foglalasok = new List<Foglalasok>();
 
@@ -288,25 +368,7 @@ namespace BP_gokart
                 foglalasok.Add(new Foglalasok(v));
             }
 
-            Console.WriteLine();
-            Console.WriteLine("Foglalásaik:");
-            foreach (var f in foglalasok)
-            {
-                f.Kiir();
-            }
-
-            Console.WriteLine();
-            Console.WriteLine("Időszalag a hónap végéig:");
-            var idoszalag = new BP_gokart.Idoszalag(DateTime.Today);
-            idoszalag.FeltoltFoglalasokkal(foglalasok);
-            idoszalag.Megjelenit();
-
-            /*
-            List<Manualis_idopontfoglalas> manualis_idopontfoglalas = new List<Manualis_idopontfoglalas>();
-            Manualis_idopontfoglalas.Generalt_versenyzok_kilistazasa(versenyzok);
-            */
-
-            //A kommentelt részek egyelőre hibásak, be kell még fejezni
+            menu(versenyzok, foglalasok, ceg);
 
             Console.WriteLine();
             Console.WriteLine("Kilépéshez nyomja meg az ENTER billentyűt.");
